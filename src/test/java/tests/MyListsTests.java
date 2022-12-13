@@ -80,7 +80,7 @@ public class MyListsTests extends CoreTestCase {
         SearchPageObject.typeSearchLine("Java");
         SearchPageObject.clickByArticleWithSubstring("Object-oriented");
         ArticlePageObject.waitForTitleElement();
-        String articleTitle = ArticlePageObject.getArticleTitle();
+        String no_needed_articleTitle = ArticlePageObject.getArticleTitle();
 
         if(Platform.getInstance().isAndroid()){
             ArticlePageObject.addArticleToMyList(NAME_OF_FOLDER);
@@ -100,13 +100,14 @@ public class MyListsTests extends CoreTestCase {
 
             ArticlePageObject.waitForTitleElement();
             assertEquals("We are not on the same page after login",
-                    articleTitle,
+                    no_needed_articleTitle,
                     ArticlePageObject.getArticleTitle());
         }
 
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine("Appium");
         SearchPageObject.clickByArticleWithSubstring("Automation");
+        String needed_articleTitle = ArticlePageObject.getArticleTitle();
 
         if(Platform.getInstance().isAndroid()){
             ArticlePageObject.addArticleToMyList(NAME_OF_FOLDER);
@@ -122,6 +123,8 @@ public class MyListsTests extends CoreTestCase {
         if(Platform.getInstance().isAndroid()){
             MyListsPageObject.openFolderByName(NAME_OF_FOLDER);
         }
-        MyListsPageObject.swipeArticleToDelete(articleTitle);
+        MyListsPageObject.swipeArticleToDelete(no_needed_articleTitle);
+
+        MyListsPageObject.waitForArticleApearByTitle(needed_articleTitle);
     }
 }
