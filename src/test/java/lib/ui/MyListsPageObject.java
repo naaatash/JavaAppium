@@ -1,6 +1,7 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import io.qameta.allure.Step;
 import lib.Platform;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -11,17 +12,24 @@ abstract public class MyListsPageObject extends MainPageObject{
     {
         return ELEMENT_BY_NAME_TPL.replace("{TITLE}", nameOfFolder);
     }
+
     public MyListsPageObject(RemoteWebDriver driver)
     {
         super(driver);
     }
+
+    @Step("Open folder by name '{nameOfFolder}'")
     public void openFolderByName(String nameOfFolder)
     {
         this.waitForElementAndClick(getElementXpathByName(nameOfFolder), "Cannot find folder by name " + nameOfFolder);
     }
+
+    @Step("Get 'Remove' button by article title '{title}'")
     public String getRemoveButtonByTitle(String title){
         return REMOVE_FROM_SAVED_BUTTON.replace("{TITLE}", title);
     }
+
+    @Step("Swipe article to delete. Only for mobile apps")
     public void swipeArticleToDelete(String articleTitle)
     {
         this.waitForArticleApearByTitle(articleTitle);
@@ -45,11 +53,14 @@ abstract public class MyListsPageObject extends MainPageObject{
         }
     }
 
+    @Step("Wait for article not present by title {articleTitle}")
     public void waitForArticleDisapearByTitle(String articleTitle)
     {
         String articleTitle_xpath = getElementXpathByName(articleTitle);
         this.waitForElementAbsence(articleTitle_xpath, "Article absence test failed", 5);
     }
+
+    @Step("Wait for article appear by title '{articleTitle}'")
     public void waitForArticleApearByTitle(String articleTitle)
     {
         String articleTitle_xpath = getElementXpathByName(articleTitle);

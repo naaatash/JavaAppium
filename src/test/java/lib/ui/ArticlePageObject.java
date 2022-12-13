@@ -1,6 +1,7 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import io.qameta.allure.Step;
 import lib.Platform;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -20,15 +21,16 @@ abstract public class ArticlePageObject extends MainPageObject{
     {
         super(driver);
     }
-
+    @Step("Wait for title element present")
     public WebElement waitForTitleElement()
     {
         return this.waitForElementPresent(TITLE, "Cannot find article title on page", 20);
     }
-
+    @Step("Get article title")
     public String getArticleTitle()
     {
         WebElement titleElement = waitForTitleElement();
+        screenshot(this.takeScreenshot("article_title"));
         if (Platform.getInstance().isAndroid()){
         return titleElement.getAttribute("text");
         }
@@ -38,7 +40,7 @@ abstract public class ArticlePageObject extends MainPageObject{
             return titleElement.getText();
         }
     }
-
+    @Step("Swipe until footer appear")
     public void swipeToFooter()
     {
         if (Platform.getInstance().isAndroid()){
@@ -58,7 +60,7 @@ abstract public class ArticlePageObject extends MainPageObject{
                     15);
         }
     }
-
+    @Step("Add article to My List")
     public void addArticleToMyList(String nameOfFolder)
     {
         this.waitForElementAndClick(
@@ -74,6 +76,7 @@ abstract public class ArticlePageObject extends MainPageObject{
         this.waitForElementAndClick(
                 OK_BUTTON, "Cannot find OK button");
     }
+    @Step("Close article")
     public void closeArticle()
     {
         if (Platform.getInstance().isMW()){
@@ -84,6 +87,7 @@ abstract public class ArticlePageObject extends MainPageObject{
                 CLOSE_ARTICLE_BUTTON, "Cannot find element");
         }
     }
+    @Step("Add article to My saved")
     public void addArticlesToMySaved(){
         if (Platform.getInstance().isMW()){
             this.removeArticleFromSavedIfItAdded();
@@ -91,6 +95,7 @@ abstract public class ArticlePageObject extends MainPageObject{
         this.waitForElementPresent(OPTIONS_ADD_TO_MY_LIST_BUTTON, "Cannot find option to add article to reading list", 5);
         this.waitForElementAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON, "Cannot click option to add article to reading list", 5);
     }
+    @Step("Remove article from saved, if its added before")
     public void removeArticleFromSavedIfItAdded(){
         if (this.isElementPresent(OPTIONS_REMOVE_FROM_MY_LIST_BUTTON)){
             this.waitForElementAndClick(OPTIONS_REMOVE_FROM_MY_LIST_BUTTON, "Cannot find and click 'remove article from saved' button", 1);

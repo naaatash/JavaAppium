@@ -1,21 +1,31 @@
 package tests;
 
+import io.qameta.allure.*;
+import io.qameta.allure.junit4.DisplayName;
 import lib.CoreTestCase;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.SearchPageObjectFactory;
+import org.junit.Assert;
 import org.junit.Test;
-
+@Epic("Tests for search")
 public class SearchTests extends CoreTestCase {
     @Test
+    @Feature("Search")
+    @DisplayName("Search 'Java'")
+    @Description("Type 'Java' in search line and wait for search result with 'Object-oriented' string in description")
+    @Severity(SeverityLevel.NORMAL)
     public void testSearchJava()
     {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitForSearchResult("bject-oriented");
+        SearchPageObject.waitForSearchResult("Object-oriented");
     }
-
     @Test
+    @Feature("Search")
+    @DisplayName("Cancel search")
+    @Description("Init searching, wait for cancel button, tap it and wait for cancel button to disappear")
+    @Severity(SeverityLevel.MINOR)
     public void testCancelSearch(){
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         SearchPageObject.initSearchInput();
@@ -25,16 +35,24 @@ public class SearchTests extends CoreTestCase {
     }
 
     @Test
+    @Feature("Search")
+    @DisplayName("Amount of no empty search")
+    @Description("Search 'Linkin Park discography' and assert there is more then 0 search results")
+    @Severity(SeverityLevel.MINOR)
     public void testAmountOfNoEmptySearch(){
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         SearchPageObject.initSearchInput();
-        String search_line = "inkin Park discography";
+        String search_line = "Linkin Park discography";
         SearchPageObject.typeSearchLine(search_line);
         int amount_of_search_results = SearchPageObject.getAmountOfFoundArticles();
-        assertTrue("We found too few results", amount_of_search_results > 0);
+        Assert.assertTrue("We found too few results", amount_of_search_results > 0);
     }
 
     @Test
+    @Feature("Search")
+    @DisplayName("Empty search results label")
+    @Description("Search 'lnubkghfdfvbgyun' and checking empty result label")
+    @Severity(SeverityLevel.MINOR)
     public void testAmountOfEmptySearch(){
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
         SearchPageObject.initSearchInput();
@@ -45,6 +63,10 @@ public class SearchTests extends CoreTestCase {
     }
 
     @Test
+    @Feature("Search")
+    @DisplayName("Search for element by title and description")
+    @Description("Search article and check result with both values - title and description")
+    @Severity(SeverityLevel.MINOR)
     public void testSearchForElementByTitleAndDescription()
     {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);

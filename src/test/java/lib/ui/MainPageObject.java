@@ -4,6 +4,9 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
+import io.qameta.allure.Attachment;
+import io.qameta.allure.Step;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -11,6 +14,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import lib.Platform;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -21,6 +29,8 @@ public class MainPageObject {
     {
         this.driver = driver;
     }
+
+    @Step("Wait for element present by locator '{locator}'")
     public WebElement waitForElementPresent(String locator, String error_message, long timeoutInSeconds){
         By by = getLocatorByString(locator);
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -31,6 +41,7 @@ public class MainPageObject {
         return waitForElementPresent(locator, error_message, 5);
     }
 
+    @Step("Try click element '{locator}' with few attempts")
     public void tryClickElementWithFewAttempts(String locator, String error_message, int amount_of_attempts){
         int current_attempts = 0;
         boolean need_more_attempts = true;
@@ -46,32 +57,41 @@ public class MainPageObject {
             ++ current_attempts;
         }
     }
+
+    @Step("Get amount of elements by '{locator}'")
     public int getAmountOfElements(String locator){
         By by = this.getLocatorByString(locator);
         List elements = driver.findElements(by);
         return elements.size();
     }
 
+    @Step("Return amount of elements '{locator}'")
     public Boolean isElementPresent(String locator){
         return getAmountOfElements(locator) > 0;
     }
 
+    @Step("Wait for element '{locator}' and click it. Default timeout")
     public WebElement waitForElementAndClick(String locator, String error_message){
         WebElement element = waitForElementPresent(locator, error_message);
         element.click();
         return element;
     }
+
+    @Step("Wait for element '{locator}' and click it. Timeout '{timeoutInSeconds}'")
     public WebElement waitForElementAndClick(String locator, String error_message, long timeoutInSeconds){
         WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
         element.click();
         return element;
     }
+
+    @Step("Wait for element '{locator}' and send value '{value}'. Timeout '{timeoutInSeconds}'")
     public WebElement waitForElementAndSendKeys(String locator, String value, String error_message, int timeoutInSeconds){
         WebElement element = waitForElementPresent(locator, error_message, timeoutInSeconds);
         element.sendKeys(value);
         return element;
     }
 
+    @Step("Wait for element '{locator}' not present. Timeout '{timeoutInSeconds}'")
     public boolean waitForElementAbsence(String locator, String error_message, long timeoutInSeconds){
         By by = getLocatorByString(locator);
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -79,12 +99,14 @@ public class MainPageObject {
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
     }
 
+    @Step("Wait for element '{locator}' and clear")
     public WebElement waitForElementAndClear(String locator, String error_message){
         WebElement element = waitForElementPresent(locator, error_message);
         element.clear();
         return element;
     }
 
+    @Step("Assert element '{locator}' has text")
     public void assertElementHasText(String locator, String expectedValue, String error_message){
         WebElement element = waitForElementPresent(locator, error_message);
         String actualValue = element.getText();
@@ -92,6 +114,7 @@ public class MainPageObject {
                 actualValue);
     }
 
+    @Step("Swipe up. Duration is {timeOfSwipe} millis")
     public void swipeUp(int timeOfSwipe){
         if (driver instanceof AppiumDriver){
         TouchAction action = new TouchAction((AppiumDriver)driver);
@@ -111,6 +134,8 @@ public class MainPageObject {
             System.out.println("Method swipeUp() does nothing for platform " + Platform.getInstance().getPlatformVar());
         }
     }
+
+    @Step("Swipe up quick (200 millis)")
     public void swipeUpQuick(){
         swipeUp(200);
     }
@@ -128,6 +153,7 @@ public class MainPageObject {
         }
     }
 
+    @Step("Swipe element '{locator}' to the left")
     public void swipeElementToLeft(String locator, String error_message){
         if (driver instanceof AppiumDriver){
         WebElement element = waitForElementPresent(
@@ -157,6 +183,7 @@ public class MainPageObject {
         }
     }
 
+    @Step("Get locator by string '{locator_with_type}'")
     public By getLocatorByString(String locator_with_type)
     {
         String[] explored_locator = locator_with_type.split(Pattern.quote(":"), 2);
@@ -174,6 +201,8 @@ public class MainPageObject {
                 throw new IllegalArgumentException("Cannot get type of locator. Locator: " + locator_with_type);
         }
     }
+
+    @Step("Check is element '{locator}' located on the screen")
     public boolean isElementLocatedOnTheScreen(String locator){
         int element_location_by_y = this.waitForElementPresent(locator, "Cannot find element by locator" + locator, 1).getLocation().getY();
         if (Platform.getInstance().isMW()){
@@ -184,6 +213,8 @@ public class MainPageObject {
         int screen_size_by_y = driver.manage().window().getSize().getHeight();
         return (element_location_by_y < screen_size_by_y);
     }
+
+    @Step("Swipe up till element '{locator}' appear. Max swipes '{max_swipes}'")
     public void swipeUpTillElementAppear(String locator, String error_message, int max_swipes){
         int already_swiped = 0;
 
@@ -195,6 +226,8 @@ public class MainPageObject {
             ++already_swiped;
         }
     }
+
+    @Step("Click element '{locator}' to the right upper corner")
     public void clickElementToTheRightUpperCorner(String locator, String error_message){
         if (driver instanceof AppiumDriver){
         WebElement element = this.waitForElementPresent(locator  + "/..", error_message);
@@ -214,6 +247,8 @@ public class MainPageObject {
             System.out.println("Method clickElementToTheRightUpperCorner() does nothing for platform " + Platform.getInstance().getPlatformVar());
         }
     }
+
+    @Step("Scroll web page up")
     public void scrollWebPageUp(){
         if (Platform.getInstance().isMW()){
             JavascriptExecutor JSExecutor = (JavascriptExecutor) driver;
@@ -224,6 +259,7 @@ public class MainPageObject {
         }
     }
 
+    @Step("Scroll till element '{locator}' not visible")
     public void scrollWebPageTillElementNotVisible(String locator, String error_message, int max_swipes){
         int already_swiped = 0;
 
@@ -235,5 +271,31 @@ public class MainPageObject {
                 Assert.assertTrue(error_message, element.isDisplayed());
             }
         }
+    }
+
+    @Step("Take screenshot")
+    public String takeScreenshot(String name){
+        TakesScreenshot ts = (TakesScreenshot)this.driver;
+        File source = ts.getScreenshotAs(OutputType.FILE);
+        String path = System.getProperty("user.dir") + "/" + name + "_screenshot.png";
+        try {
+            FileUtils.copyFile(source, new File(path));
+            System.out.println("The screenshot was taken " + path);
+        } catch (Exception e){
+            System.out.println("Cannot take screenshot. Error: " + e.getMessage());
+        }
+        return path;
+    }
+
+    @Attachment
+    public static byte[] screenshot(String path){
+        byte[] bytes = new byte[0];
+
+        try {
+            bytes = Files.readAllBytes(Paths.get(path));
+        } catch (IOException e){
+            System.out.println("Cannot get bytes from screenshot. Error: " + e.getMessage());
+        }
+        return bytes;
     }
 }
