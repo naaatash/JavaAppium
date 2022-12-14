@@ -78,4 +78,29 @@ public class SearchTests extends CoreTestCase {
         SearchPageObject.waitForSearchResult(title);
         SearchPageObject.waitForElementByTitleAndDescription(title, description);
     }
+    @Test
+    @Feature("Search")
+    @DisplayName("Search and check three results")
+    @Description("Search articles by 'new year' and check three results by description")
+    @Severity(SeverityLevel.MINOR)
+    public void testSearchAndVerifyThreeResults()
+    {
+        SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
+
+        String search_line = "new year";
+
+        String expected_description_1 = "Beginning of the calendar year";
+
+        String expected_description_2 = "Celebration on last day of old year";
+
+        String expected_description_3 = "Holiday that celebrates the new year";
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_line);
+        SearchPageObject.waitForSearchResult(search_line);
+
+        SearchPageObject.waitForSearchResult(expected_description_1);
+        SearchPageObject.waitForSearchResult(expected_description_2);
+        SearchPageObject.waitForSearchResult(expected_description_3);
+    }
 }
